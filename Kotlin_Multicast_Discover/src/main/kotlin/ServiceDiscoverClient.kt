@@ -19,13 +19,12 @@ class ServiceDiscoverClient(private val multicastIp: InetAddress,
     init {
         channel.setOption(StandardSocketOptions.SO_REUSEADDR, true)
         channel.bind(InetSocketAddress(port))
-        channel.configureBlocking(false)
         channel.setOption(StandardSocketOptions.IP_MULTICAST_IF, networkInterface)
     }
 
-    fun startDiscover() {
-        channel.join(multicastIp, networkInterface)
-        val msg = "HELLO FOR $serviceId"
+    fun startDiscover(microName: String) {
+        val key = channel.join(multicastIp, networkInterface)
+        val msg = "HELLO FANCY-KARAOKE FROM $microName"
         val msgBytes = msg.toByteArray(Charsets.UTF_8)
         channel.send(ByteBuffer.wrap(msgBytes), InetSocketAddress(multicastIp, port))
 
@@ -38,14 +37,16 @@ class ServiceDiscoverClient(private val multicastIp: InetAddress,
             bytebuffer.get(bytes)
 
             val recvMsg = String(bytes, StandardCharsets.UTF_8)
-            if ("HELLO FROM $serviceId" == recvMsg) {
+            println(recvMsg)
+            if ("GREETINGS FROM FANCY-KARAOKE" == recvMsg) {
                 found = true;
-            }
 
-            if (srcAddress is InetSocketAddress) {
-                consumer.accept(srcAddress.address)
+                if (srcAddress is InetSocketAddress) {
+                    consumer.accept(srcAddress.address)
+                }
             }
         }
+        key.drop()
     }
 
     fun setOnServiceDiscovered(consumer: Consumer<InetAddress>) {
