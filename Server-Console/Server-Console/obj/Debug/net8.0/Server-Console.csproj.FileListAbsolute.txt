@@ -1,0 +1,15 @@
+/home/erik/Downloads/Fancy-Caraoke/Server-Console/Server-Console/bin/Debug/net8.0/Server-Console
+/home/erik/Downloads/Fancy-Caraoke/Server-Console/Server-Console/bin/Debug/net8.0/Server-Console.deps.json
+/home/erik/Downloads/Fancy-Caraoke/Server-Console/Server-Console/bin/Debug/net8.0/Server-Console.runtimeconfig.json
+/home/erik/Downloads/Fancy-Caraoke/Server-Console/Server-Console/bin/Debug/net8.0/Server-Console.dll
+/home/erik/Downloads/Fancy-Caraoke/Server-Console/Server-Console/bin/Debug/net8.0/Server-Console.pdb
+/home/erik/Downloads/Fancy-Caraoke/Server-Console/Server-Console/obj/Debug/net8.0/Server-Console.GeneratedMSBuildEditorConfig.editorconfig
+/home/erik/Downloads/Fancy-Caraoke/Server-Console/Server-Console/obj/Debug/net8.0/Server-Console.AssemblyInfoInputs.cache
+/home/erik/Downloads/Fancy-Caraoke/Server-Console/Server-Console/obj/Debug/net8.0/Server-Console.AssemblyInfo.cs
+/home/erik/Downloads/Fancy-Caraoke/Server-Console/Server-Console/obj/Debug/net8.0/Server-Console.csproj.CoreCompileInputs.cache
+/home/erik/Downloads/Fancy-Caraoke/Server-Console/Server-Console/obj/Debug/net8.0/Server-Console.sourcelink.json
+/home/erik/Downloads/Fancy-Caraoke/Server-Console/Server-Console/obj/Debug/net8.0/Server-Console.dll
+/home/erik/Downloads/Fancy-Caraoke/Server-Console/Server-Console/obj/Debug/net8.0/refint/Server-Console.dll
+/home/erik/Downloads/Fancy-Caraoke/Server-Console/Server-Console/obj/Debug/net8.0/Server-Console.pdb
+/home/erik/Downloads/Fancy-Caraoke/Server-Console/Server-Console/obj/Debug/net8.0/Server-Console.genruntimeconfig.cache
+/home/erik/Downloads/Fancy-Caraoke/Server-Console/Server-Console/obj/Debug/net8.0/ref/Server-Console.dll
