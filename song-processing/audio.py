@@ -1,5 +1,7 @@
 import yt_dlp
 from pathlib import Path
+import os
+import subprocess
 
 def download_youtube_mp3(url: str, root: str) -> None:
     ydl_opts = {
@@ -7,10 +9,10 @@ def download_youtube_mp3(url: str, root: str) -> None:
         'outtmpl': '%(title)s.%(ext)s',
         'postprocessors': [{
             'key': 'FFmpegExtractAudio',
-            'preferredcodec': 'mp3',
+            'preferredcodec': 'wav',
             'preferredquality': '192',
         }],
-        'quiet': False,
+        'quiet': True,
     }
 
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
@@ -19,10 +21,11 @@ def download_youtube_mp3(url: str, root: str) -> None:
     # Find the downloaded mp3 file
     info_dict = ydl.extract_info(url, download=False)
     title = info_dict.get('title', 'downloaded_audio')
-    mp3_filename = f"{title}.mp3"
+    audio_file = f"{title}.wav"
 
-    if Path(mp3_filename).exists():
-        Path(mp3_filename).rename(f"{root}/audio.mp3")
+    if Path(audio_file).exists():
+        subprocess.call(f"ffmpeg -hide_banner -loglevel error -i '{audio_file}' -ac 1 {root}/audio.wav", shell=True)
+        os.remove(audio_file)
     else:
         print("Failed to download MP3.")
 
