@@ -2,13 +2,7 @@
 
 [ext_resource type="Script" path="res://script/MainKaraoke.cs" id="1_30wy4"]
 [ext_resource type="PackedScene" uid="uid://ds3nxtoniickq" path="res://scenes/noten_leiste.tscn" id="2_8l7km"]
-
-[sub_resource type="LabelSettings" id="LabelSettings_m6ug8"]
-font_size = 128
-outline_size = 16
-shadow_size = 60
-shadow_color = Color(0, 0, 0, 0.156863)
-shadow_offset = Vector2(10, 10)
+[ext_resource type="LabelSettings" uid="uid://brvtdnfm5wuua" path="res://fonts/notify_font.tres" id="3_pou25"]
 
 [sub_resource type="Animation" id="Animation_8iab8"]
 resource_name = "PopOut"
@@ -79,8 +73,6 @@ script = ExtResource("1_30wy4")
 [node name="NotenLeiste" parent="." instance=ExtResource("2_8l7km")]
 position = Vector2(0, 540)
 
-[node name="MusicPlayer" type="AudioStreamPlayer" parent="."]
-
 [node name="KaraokeCam" type="Camera2D" parent="."]
 anchor_mode = 0
 
@@ -111,7 +103,7 @@ grow_vertical = 2
 rotation = -0.174533
 scale = Vector2(0.01, 0.01)
 text = "Hurra!!"
-label_settings = SubResource("LabelSettings_m6ug8")
+label_settings = ExtResource("3_pou25")
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="KaraokeCam/Control/NotifyText"]
 libraries = {

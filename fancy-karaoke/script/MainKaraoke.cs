@@ -29,10 +29,21 @@ public partial class MainKaraoke : Node2D
 		noteHits.Add((10.0d, "Hurra!", new Color(1, 0.647059f, 0, 1)));
 		noteHits.Add((2.0d, "Unglaublich!!!", new Color(1, 0.843137f, 0, 1)));
 		
+		this.setup_notify_label();
+		
 		_timeBegin = Time.GetTicksUsec();
 		_timeDelay = AudioServer.GetTimeToNextMix() + AudioServer.GetOutputLatency();
-		this.load_song("Test");
-		GetNode<AudioStreamPlayer>("MusicPlayer").Play();
+	}
+	
+	public void setup_notify_label() {
+		Label notify = GetNode<Label>("KaraokeCam/Control/NotifyText");
+		LabelSettings settings = GD.Load<LabelSettings>("res://fonts/notify_font.tres");
+		notify.LabelSettings = new LabelSettings();
+		notify.LabelSettings.FontSize = settings.FontSize;
+		notify.LabelSettings.OutlineSize = settings.OutlineSize;
+		notify.LabelSettings.ShadowSize = settings.ShadowSize;
+		notify.LabelSettings.ShadowColor = settings.ShadowColor;
+		notify.LabelSettings.ShadowOffset = settings.ShadowOffset;
 	}
 
 	// Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -120,8 +131,6 @@ public partial class MainKaraoke : Node2D
 	
 	public void load_song(string name)
 	{
-		GetNode<AudioStreamPlayer>("MusicPlayer").Stream = GD.Load<AudioStream>("res://music/" + name + ".mp3");
-		
 		GDScript DataLoad = GD.Load<GDScript>("res://script/DataLoader.gd");
 		GodotObject dataLoad = (GodotObject) DataLoad.New();
 		Godot.Collections.Array notes = (Godot.Collections.Array) dataLoad.Call("read_note_data", name);
