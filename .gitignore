@@ -31,3 +31,8 @@ google-services.json
 
 # Android Profiling
 *.hprof
+
+# Virtual env.
+__pycache__
+venv
+song-processing/song
