@@ -10,5 +10,17 @@
 	{
 		"line": 3,
 		"timestamp": 7.0
+	},
+	{
+		"line": 2,
+		"timestamp": 8.0
+	},
+	{
+		"line": 3,
+		"timestamp": 10.5
+	},
+	{
+		"line": 1,
+		"timestamp": 12.0
 	}
 ]

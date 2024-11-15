@@ -45,7 +45,11 @@ public partial class MainKaraoke : Node2D
 		
 		if (own_note_count == 0)
 		{
-			GetNode<NotenLeiste>("NotenLeiste").add_singing_node(((float) Math.Sin(time) + 1.0f) * 2.0f, pos.X);
+			double dist = GetNode<NotenLeiste>("NotenLeiste").add_singing_node(((float) Math.Sin(time) + 1.0f) * 2.0f, pos.X);
+			if (dist < 45.0f) {
+				AnimationPlayer player = GetNode<AnimationPlayer>("KaraokeCam/Control/NotifyText/AnimationPlayer");
+				player.Play("PopOut");
+			}
 		}
 	}
 	
