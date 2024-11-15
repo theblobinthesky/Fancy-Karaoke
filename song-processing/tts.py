@@ -3,6 +3,7 @@ from pathlib import Path
 import shutil
 import json
 import re
+import subprocess
 
 def load_lines(name: str):
     with open(name, 'r') as file:
@@ -31,25 +32,46 @@ def get_chapters(lines: list[str]):
 
             if textToFile.__contains__(line):
                 # Use the already downloaded file.
-                lastLines.append({"file": textToFile[line], "text": line})
+                lastLines.append({"filename": textToFile[line], "text": line})
             else:
-                file = f"tts/{i}.mp3"
-                textToFile[line] = file
-                lastLines.append({"file": file, "text": line})
+                filename = f"tts/{i}"
+                textToFile[line] = filename
+                lastLines.append({"filename": filename, "text": line})
+
+    # Remove empty chapters
+    chapters = [chapter for chapter in chapters if len(chapter["lines"]) > 0]
 
     return chapters, textToFile.items()
 
 def run_tts(root: str, downloads):
     cache = {}
+    wavs = []
 
     for (text, file) in downloads:
-        print(f"TTS on '{text}'...")
+        print(f"TTS on '{text}'.")
         tts = gTTS(text, lang='en-US', slow=True)
-        tts.save(f"{root}/{file}")
+        wav = f"{root}/{file}.wav"
+        tts.save(wav)
+        wavs.append(wav)
+
+def join_tts(root: str, chapters):
+    for c, chapter in enumerate(chapters):
+        print(f"TTS Join on chapter {c}")
+        wavs = []
+        for line in chapter["lines"]:
+            filename = line["filename"]
+            wavs.append(f"{root}/{filename}.wav")
+
+        inputs = " ".join([f"-i {wav}" for wav in wavs])
+        cmd = f"ffmpeg -hide_banner -loglevel error {inputs} -filter_complex '[0:0][1:0][2:0][3:0]concat=n={len(wavs)}:v=0:a=1[out]' -map '[out]' {root}/tts-joins/{c}.wav"
+        subprocess.call(cmd, shell=True)
 
 def main(root: str):
     shutil.rmtree(f"{root}/tts", ignore_errors=True)
     Path(f"{root}/tts").mkdir()
+
+    shutil.rmtree(f"{root}/tts-joins", ignore_errors=True)
+    Path(f"{root}/tts-joins").mkdir()
 
     lines = load_lines(f"{root}/lyrics.txt")
     chapters, downloads = get_chapters(lines)
@@ -58,3 +80,7 @@ def main(root: str):
         json.dump(chapters, file, indent=2)
 
     run_tts(root, downloads)
+    join_tts(root, chapters)
+
+if __name__ == "__main__":
+    main("song")
