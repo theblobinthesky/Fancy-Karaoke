@@ -6,20 +6,20 @@
 script = ExtResource("1_j203f")
 
 [node name="Line0" type="Line2D" parent="."]
+position = Vector2(0, 80)
 points = PackedVector2Array(0, 0, 1920, 0)
 
 [node name="Line1" type="Line2D" parent="."]
-position = Vector2(0, -40)
-points = PackedVector2Array(0, 0, 1920, 0)
-
-[node name="Line2" type="Line2D" parent="."]
-position = Vector2(0, -80)
-points = PackedVector2Array(0, 0, 1920, 0)
-
-[node name="Line3" type="Line2D" parent="."]
 position = Vector2(0, 40)
 points = PackedVector2Array(0, 0, 1920, 0)
 
+[node name="Line2" type="Line2D" parent="."]
+points = PackedVector2Array(0, 0, 1920, 0)
+
+[node name="Line3" type="Line2D" parent="."]
+position = Vector2(0, -40)
+points = PackedVector2Array(0, 0, 1920, 0)
+
 [node name="Line4" type="Line2D" parent="."]
-position = Vector2(0, 80)
+position = Vector2(0, -80)
 points = PackedVector2Array(0, 0, 1920, 0)
