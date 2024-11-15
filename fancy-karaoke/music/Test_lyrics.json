@@ -1,0 +1,22 @@
+[
+	{
+		"line": "Looking for a substitution",
+		"offset": 1.0,
+		"word_finished": [
+			0.75,
+			0.95,
+			1.10,
+			2.0
+		]
+	},
+	{
+		"line": "Looking for a substitution",
+		"offset": 5.0,
+		"word_finished": [
+			0.75,
+			0.95,
+			1.10,
+			2.0
+		]
+	}
+]
