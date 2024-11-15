@@ -9,6 +9,8 @@ public partial class MainKaraoke : Node2D
 	private const float speed = 100.0f;
 	
 	private int own_note_count = 0;
+	
+	private int last_mod_pos = 0;
 
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
@@ -24,12 +26,19 @@ public partial class MainKaraoke : Node2D
 	{
 		double time = (Time.GetTicksUsec() - _timeBegin) / 1000000.0d;
 		time = Math.Max(0.0d, time - _timeDelay);
-		GD.Print(string.Format("Time is: {0}", time));
 		
 		var cam = GetNode<Camera2D>("KaraokeCam");
 		var pos = cam.Position;
 		pos.X = speed * (float) time;
 		cam.Position = pos;
+		
+		var mod_pos = ((int) Math.Floor(pos.X)) % 2000;
+		
+		if (mod_pos < last_mod_pos) {
+			GetNode<NotenLeiste>("NotenLeiste").drift_lines();
+		}
+		
+		last_mod_pos = mod_pos;
 		
 		own_note_count++;
 		own_note_count %= 60;
