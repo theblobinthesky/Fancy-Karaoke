@@ -134,17 +134,15 @@ position = Vector2(0, 540)
 anchor_mode = 0
 
 [node name="ActionLine" type="Line2D" parent="KaraokeCam"]
-points = PackedVector2Array(960, 0, 960, 1080)
+points = PackedVector2Array(960, 0, 960, 830)
 width = 5.0
 default_color = Color(1, 0, 0, 1)
 
 [node name="Control" type="Control" parent="KaraokeCam"]
 layout_mode = 3
 anchors_preset = 0
-offset_left = 400.0
-offset_top = 240.0
-offset_right = 440.0
-offset_bottom = 280.0
+offset_right = 40.0
+offset_bottom = 40.0
 
 [node name="NotifyText" type="Label" parent="KaraokeCam/Control"]
 layout_mode = 1
@@ -153,10 +151,10 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -216.5
-offset_top = -87.5
-offset_right = 216.5
-offset_bottom = 87.5
+offset_left = 183.5
+offset_top = 162.5
+offset_right = 616.5
+offset_bottom = 337.5
 grow_horizontal = 2
 grow_vertical = 2
 rotation = -0.174533
@@ -168,3 +166,12 @@ label_settings = SubResource("LabelSettings_m6ug8")
 libraries = {
 "": SubResource("AnimationLibrary_o1thg")
 }
+
+[node name="LyricsContainer" type="HBoxContainer" parent="KaraokeCam/Control"]
+layout_mode = 2
+offset_left = 60.0
+offset_top = 850.0
+offset_right = 1860.0
+offset_bottom = 890.0
+theme_override_constants/separation = 30
+alignment = 1
