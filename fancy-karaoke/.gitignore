@@ -1,0 +1,11 @@
+# Godot 4+ specific ignores
+.godot/
+/android/
+
+# ignore media files
+*.mp3
+*.mp3.import
+*.ogv
+*.ogv.import
+*.png
+*.png.import

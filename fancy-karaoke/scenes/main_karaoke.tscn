@@ -1,0 +1,35 @@
+[gd_scene load_steps=4 format=3 uid="uid://bsk4essy73xt8"]
+
+[ext_resource type="VideoStream" path="res://videos/Test.ogv" id="1_rw7i7"]
+[ext_resource type="PackedScene" uid="uid://ds3nxtoniickq" path="res://scenes/noten_leiste.tscn" id="2_8l7km"]
+[ext_resource type="AudioStream" uid="uid://c8fmcleoa85ne" path="res://music/Test.mp3" id="3_klo5d"]
+
+[node name="Karaoke" type="Node2D"]
+
+[node name="BackControl" type="Control" parent="."]
+z_index = -2
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="VideoStreamPlayer" type="VideoStreamPlayer" parent="BackControl"]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+stream = ExtResource("1_rw7i7")
+autoplay = true
+
+[node name="NotenLeiste" parent="." instance=ExtResource("2_8l7km")]
+position = Vector2(0, 540)
+
+[node name="MusicPlayer" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("3_klo5d")
+
+[node name="KaraokeCam" type="Camera2D" parent="."]
+anchor_mode = 0
+
+[node name="ActionLine" type="Line2D" parent="KaraokeCam"]
+points = PackedVector2Array(960, 0, 960, 1080)
+width = 5.0
+default_color = Color(1, 0, 0, 1)
