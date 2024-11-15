@@ -1,5 +1,6 @@
 using Godot;
 using System;
+using System.Collections.Generic;
 
 public partial class MainKaraoke : Node2D
 {
@@ -15,10 +16,19 @@ public partial class MainKaraoke : Node2D
 	private Godot.Collections.Array lyrics = new Godot.Collections.Array();
 	private int line_index = -1;
 	private int word_index = 0;
+	
+	private List<(double limit, string text, Color color)> noteHits = new List<(double limit, string text, Color color)>();
 
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
 	{
+		noteHits.Add((Double.MaxValue, "Miss", new Color(1, 0, 0, 1)));
+		noteHits.Add((45.0d, "Ok", new Color(1, 1, 1, 1)));
+		noteHits.Add((30.0d, "Gut", new Color(0, 0, 1, 1)));
+		noteHits.Add((20.0d, "Super", new Color(0, 1, 0, 1)));
+		noteHits.Add((10.0d, "Hurra!", new Color(1, 0.647059f, 0, 1)));
+		noteHits.Add((2.0d, "Unglaublich!!!", new Color(1, 0.843137f, 0, 1)));
+		
 		_timeBegin = Time.GetTicksUsec();
 		_timeDelay = AudioServer.GetTimeToNextMix() + AudioServer.GetOutputLatency();
 		this.load_song("Test");
@@ -85,12 +95,23 @@ public partial class MainKaraoke : Node2D
 		last_mod_pos = mod_pos;
 		
 		own_note_count++;
-		own_note_count %= 60;
+		own_note_count %= 10;
 		
 		if (own_note_count == 0)
 		{
-			double dist = GetNode<NotenLeiste>("NotenLeiste").add_singing_node(((float) Math.Sin(time) + 1.0f) * 2.0f, pos.X);
-			if (dist < 45.0f) {
+			(double, Sprite2D) dist = GetNode<NotenLeiste>("NotenLeiste").add_singing_node(((float) new Random().NextDouble()) * 4.0f, pos.X);
+			if (!Double.IsNaN(dist.Item1)) {
+				int hit_index = 0;
+				for (; hit_index < noteHits.Count - 1 && noteHits[hit_index + 1].limit > dist.Item1; hit_index++) {}
+				
+				Label notify = GetNode<Label>("KaraokeCam/Control/NotifyText");
+				notify.Text = noteHits[hit_index].text;
+				notify.LabelSettings.FontColor = noteHits[hit_index].color;
+				
+				Color[] colors = ((GradientTexture2D) dist.Item2.Texture).Gradient.Colors;
+				colors[0] = noteHits[hit_index].color;
+				((GradientTexture2D) dist.Item2.Texture).Gradient.Colors = colors;
+				
 				AnimationPlayer player = GetNode<AnimationPlayer>("KaraokeCam/Control/NotifyText/AnimationPlayer");
 				player.Play("PopOut");
 			}
