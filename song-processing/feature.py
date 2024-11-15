@@ -54,16 +54,12 @@ def load_features(file: str):
 def load_and_save_features(file: str):
     features = load_features(file)
 
-    path = str(Path(file).parent.joinpath(Path(file).stem))
-    ft_path = f"{path}.ft"
+    ft_path = Path(file).with_suffix(".ft")
     with open(ft_path, "wb") as file:
         np.save(file, features)
 
 def main(root: str):
     audio_wav = f"{root}/audio.wav"
-    tts_wav = f"{root}/tts.wav"
-    # tts_wavs = [str(path) for path in Path(f"{root}/tts").glob("*.wav")]
-
     load_and_save_features(audio_wav)
 
     for tts_join in Path(f"{root}/tts-joins").glob("*.wav"):
