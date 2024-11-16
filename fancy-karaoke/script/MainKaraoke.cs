@@ -1,5 +1,6 @@
 using Godot;
 using System;
+using System.Collections.Generic;
 
 public partial class MainKaraoke : Node2D
 {
@@ -15,14 +16,36 @@ public partial class MainKaraoke : Node2D
 	private Godot.Collections.Array lyrics = new Godot.Collections.Array();
 	private int line_index = -1;
 	private int word_index = 0;
+	
+	private int score = 0;
+	
+	private List<(double limit, string text, Color color, double scoreMul)> noteHits = new List<(double limit, string text, Color color, double scoreMul)>();
 
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
 	{
+		noteHits.Add((Double.MaxValue, "Miss", new Color(1, 0, 0, 1), 0.0d));
+		noteHits.Add((45.0d, "Ok", new Color(1, 1, 1, 1), 0.75d));
+		noteHits.Add((30.0d, "Gut", new Color(0, 0, 1, 1), 1.0d));
+		noteHits.Add((20.0d, "Super", new Color(0, 1, 0, 1), 1.5d));
+		noteHits.Add((10.0d, "Hurra!", new Color(1, 0.647059f, 0, 1), 2.0d));
+		noteHits.Add((2.0d, "Unglaublich!!!", new Color(1, 0.843137f, 0, 1), 5.0d));
+		
+		this.setup_notify_label();
+		
 		_timeBegin = Time.GetTicksUsec();
 		_timeDelay = AudioServer.GetTimeToNextMix() + AudioServer.GetOutputLatency();
-		this.load_song("Test");
-		GetNode<AudioStreamPlayer>("MusicPlayer").Play();
+	}
+	
+	public void setup_notify_label() {
+		Label notify = GetNode<Label>("KaraokeCam/Control/NotifyText");
+		LabelSettings settings = GD.Load<LabelSettings>("res://fonts/notify_font.tres");
+		notify.LabelSettings = new LabelSettings();
+		notify.LabelSettings.FontSize = settings.FontSize;
+		notify.LabelSettings.OutlineSize = settings.OutlineSize;
+		notify.LabelSettings.ShadowSize = settings.ShadowSize;
+		notify.LabelSettings.ShadowColor = settings.ShadowColor;
+		notify.LabelSettings.ShadowOffset = settings.ShadowOffset;
 	}
 
 	// Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -85,12 +108,34 @@ public partial class MainKaraoke : Node2D
 		last_mod_pos = mod_pos;
 		
 		own_note_count++;
-		own_note_count %= 60;
+		own_note_count %= 10;
 		
 		if (own_note_count == 0)
 		{
-			double dist = GetNode<NotenLeiste>("NotenLeiste").add_singing_node(((float) Math.Sin(time) + 1.0f) * 2.0f, pos.X);
-			if (dist < 45.0f) {
+			(double, Sprite2D) dist = GetNode<NotenLeiste>("NotenLeiste").add_singing_node(((float) new Random().NextDouble()) * 4.0f, pos.X);
+			if (!Double.IsNaN(dist.Item1)) {
+				int hit_index = 0;
+				for (; hit_index < noteHits.Count - 1 && noteHits[hit_index + 1].limit > dist.Item1; hit_index++) {}
+				
+				Label notify = GetNode<Label>("KaraokeCam/Control/NotifyText");
+				notify.Text = noteHits[hit_index].text;
+				notify.LabelSettings.FontColor = noteHits[hit_index].color;
+				
+				Color[] colors = ((GradientTexture2D) dist.Item2.Texture).Gradient.Colors;
+				colors[0] = noteHits[hit_index].color;
+				((GradientTexture2D) dist.Item2.Texture).Gradient.Colors = colors;
+				
+				Label notifyLabel = GetNode<Label>("KaraokeCam/Control/Score");
+				if (dist.Item1 > 1) {
+					score += (int) Math.Floor(-1.0 * Math.Log(1 / Math.Pow(dist.Item1, 2.0)) * noteHits[hit_index].scoreMul);
+				} else if (dist.Item1 < 0.00001) {
+					score += (int) (1.0 / dist.Item1 * noteHits[hit_index].scoreMul);
+				} else {
+					score += (int) Math.Floor(-1.0 * Math.Log(Math.Pow(dist.Item1, 4.0)) * noteHits[hit_index].scoreMul);
+				}
+				
+				notifyLabel.Text = "Score: " + score;
+				
 				AnimationPlayer player = GetNode<AnimationPlayer>("KaraokeCam/Control/NotifyText/AnimationPlayer");
 				player.Play("PopOut");
 			}
@@ -99,8 +144,6 @@ public partial class MainKaraoke : Node2D
 	
 	public void load_song(string name)
 	{
-		GetNode<AudioStreamPlayer>("MusicPlayer").Stream = GD.Load<AudioStream>("res://music/" + name + ".mp3");
-		
 		GDScript DataLoad = GD.Load<GDScript>("res://script/DataLoader.gd");
 		GodotObject dataLoad = (GodotObject) DataLoad.New();
 		Godot.Collections.Array notes = (Godot.Collections.Array) dataLoad.Call("read_note_data", name);

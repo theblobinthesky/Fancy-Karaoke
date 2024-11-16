@@ -11,6 +11,7 @@ public partial class NotenLeiste : Node2D
 	private int drift_index = 1;
 	
 	private int song_note_index = 0;
+	private double song_note_min = Double.MaxValue;
 	
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
@@ -22,7 +23,7 @@ public partial class NotenLeiste : Node2D
 	{
 	}
 	
-	public double add_singing_node(float line, float offset)
+	public (double, Sprite2D) add_singing_node(float line, float offset)
 	{
 		Sprite2D note = new Sprite2D();
 		note.Texture = GD.Load<Texture2D>("res://textures/own_note_texture.tres");
@@ -32,26 +33,47 @@ public partial class NotenLeiste : Node2D
 		note.Position = pos;
 		this.GetNode<Node2D>("OwnNotes").AddChild(note);
 		
-		double dist = Double.MaxValue;
+		double dist = Double.NaN;
+		Sprite2D songNote = null;
 		
 		Godot.Collections.Array<Node> songNotes = GetNode<Node2D>("SongNotes").GetChildren();
-		
-		if (song_note_index < songNotes.Count && ((Node2D) songNotes[song_note_index]).Position.X - pos.X < 25.0f) {
-			dist = Math.Abs(((Node2D) songNotes[song_note_index]).Position.Y - pos.Y);
-			
+
+		if (song_note_index < songNotes.Count && Math.Abs(((Sprite2D) songNotes[song_note_index]).Position.X - pos.X) < 15.0f) {
+			double current_dist = Math.Abs(((Sprite2D) songNotes[song_note_index]).Position.Y - pos.Y);
+			if (current_dist < song_note_min) {
+				song_note_min = current_dist;
+			}
+		} else if (song_note_index < songNotes.Count && song_note_min < Double.MaxValue && Math.Abs(pos.X - ((Sprite2D) songNotes[song_note_index]).Position.X) > 15.0f) {
+			dist = song_note_min;
+			songNote = (Sprite2D) songNotes[song_note_index];
 			song_note_index++;
+			song_note_min = Double.MaxValue;
 		}
 		
-		return dist;
+		return (dist, songNote);
 	}
 	
 	public void load_notes(Godot.Collections.Array notes)
 	{
+		GradientTexture2D resTexture = GD.Load<GradientTexture2D>("res://textures/note_texture.tres");
 		for (int i = 0; i < notes.Count; i++)
 		{
 			Godot.Collections.Dictionary noteDat = (Godot.Collections.Dictionary) notes[i];
 			Sprite2D note = new Sprite2D();
-			note.Texture = GD.Load<Texture2D>("res://textures/note_texture.tres");
+			
+			GradientTexture2D nodeTexture = new GradientTexture2D();
+			nodeTexture.Width = resTexture.Width;
+			nodeTexture.Height = resTexture.Height;
+			nodeTexture.Fill = resTexture.Fill;
+			nodeTexture.FillFrom = resTexture.FillFrom;
+			
+			nodeTexture.Gradient = new Gradient();
+			float[] offsets = { resTexture.Gradient.Offsets[0], resTexture.Gradient.Offsets[1] };
+			nodeTexture.Gradient.Offsets = offsets;
+			Color[] colors = { resTexture.Gradient.Colors[0], resTexture.Gradient.Colors[1] };
+			nodeTexture.Gradient.Colors = colors;
+			
+			note.Texture = (GradientTexture2D) nodeTexture;
 			var pos = note.Position;
 			pos.X = startX + pixelsPerSecond * noteDat["timestamp"].As<float>();
 			pos.Y = startY + xPerLine * noteDat["line"].As<int>();
