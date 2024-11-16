@@ -10,9 +10,13 @@ var songName: String = "Test"
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
+	playerCount = Globals.PlayerCount;
+	
 	var gridCount = roundi(sqrt(playerCount))
 	
 	var vertical = get_node("MultiViewVertical")
+	
+	var players = Globals.PlayerTeams.keys();
 	
 	var i = 0
 	while i < playerCount:
@@ -28,6 +32,7 @@ func _ready() -> void:
 			var subView = SubViewport.new()
 			container.add_child(subView)
 			var subScene = SingleKaraoke.instantiate()
+			subScene.setup_player(players[i + j]);
 			subScene.load_song(songName)
 			var factor = 1.0 / ceil(sqrt(playerCount))
 			subScene.scale = Vector2(factor, factor)
