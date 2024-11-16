@@ -1,8 +1,9 @@
-[gd_scene load_steps=7 format=3 uid="uid://bsk4essy73xt8"]
+[gd_scene load_steps=8 format=3 uid="uid://bsk4essy73xt8"]
 
 [ext_resource type="Script" path="res://script/MainKaraoke.cs" id="1_30wy4"]
 [ext_resource type="PackedScene" uid="uid://ds3nxtoniickq" path="res://scenes/noten_leiste.tscn" id="2_8l7km"]
 [ext_resource type="LabelSettings" uid="uid://brvtdnfm5wuua" path="res://fonts/notify_font.tres" id="3_pou25"]
+[ext_resource type="LabelSettings" uid="uid://bfjnkypqucnxe" path="res://fonts/score_font.tres" id="4_e7es6"]
 
 [sub_resource type="Animation" id="Animation_8iab8"]
 resource_name = "PopOut"
@@ -118,3 +119,12 @@ offset_right = 1860.0
 offset_bottom = 890.0
 theme_override_constants/separation = 30
 alignment = 1
+
+[node name="Score" type="Label" parent="KaraokeCam/Control"]
+layout_mode = 0
+offset_left = 1400.0
+offset_top = 40.0
+offset_right = 1581.0
+offset_bottom = 107.0
+text = "Score: 0"
+label_settings = ExtResource("4_e7es6")

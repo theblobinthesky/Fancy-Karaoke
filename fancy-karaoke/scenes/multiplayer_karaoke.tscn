@@ -4,7 +4,7 @@
 
 [node name="MultiplayerKaraoke" type="Node2D"]
 script = ExtResource("1_hqjbt")
-playerCount = 1
+playerCount = 3
 
 [node name="MultiViewVertical" type="VBoxContainer" parent="."]
 offset_right = 40.0

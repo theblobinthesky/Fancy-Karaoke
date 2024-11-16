@@ -17,17 +17,19 @@ public partial class MainKaraoke : Node2D
 	private int line_index = -1;
 	private int word_index = 0;
 	
-	private List<(double limit, string text, Color color)> noteHits = new List<(double limit, string text, Color color)>();
+	private int score = 0;
+	
+	private List<(double limit, string text, Color color, double scoreMul)> noteHits = new List<(double limit, string text, Color color, double scoreMul)>();
 
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
 	{
-		noteHits.Add((Double.MaxValue, "Miss", new Color(1, 0, 0, 1)));
-		noteHits.Add((45.0d, "Ok", new Color(1, 1, 1, 1)));
-		noteHits.Add((30.0d, "Gut", new Color(0, 0, 1, 1)));
-		noteHits.Add((20.0d, "Super", new Color(0, 1, 0, 1)));
-		noteHits.Add((10.0d, "Hurra!", new Color(1, 0.647059f, 0, 1)));
-		noteHits.Add((2.0d, "Unglaublich!!!", new Color(1, 0.843137f, 0, 1)));
+		noteHits.Add((Double.MaxValue, "Miss", new Color(1, 0, 0, 1), 0.0d));
+		noteHits.Add((45.0d, "Ok", new Color(1, 1, 1, 1), 0.75d));
+		noteHits.Add((30.0d, "Gut", new Color(0, 0, 1, 1), 1.0d));
+		noteHits.Add((20.0d, "Super", new Color(0, 1, 0, 1), 1.5d));
+		noteHits.Add((10.0d, "Hurra!", new Color(1, 0.647059f, 0, 1), 2.0d));
+		noteHits.Add((2.0d, "Unglaublich!!!", new Color(1, 0.843137f, 0, 1), 5.0d));
 		
 		this.setup_notify_label();
 		
@@ -122,6 +124,17 @@ public partial class MainKaraoke : Node2D
 				Color[] colors = ((GradientTexture2D) dist.Item2.Texture).Gradient.Colors;
 				colors[0] = noteHits[hit_index].color;
 				((GradientTexture2D) dist.Item2.Texture).Gradient.Colors = colors;
+				
+				Label notifyLabel = GetNode<Label>("KaraokeCam/Control/Score");
+				if (dist.Item1 > 1) {
+					score += (int) Math.Floor(-1.0 * Math.Log(1 / Math.Pow(dist.Item1, 2.0)) * noteHits[hit_index].scoreMul);
+				} else if (dist.Item1 < 0.00001) {
+					score += (int) (1.0 / dist.Item1 * noteHits[hit_index].scoreMul);
+				} else {
+					score += (int) Math.Floor(-1.0 * Math.Log(Math.Pow(dist.Item1, 4.0)) * noteHits[hit_index].scoreMul);
+				}
+				
+				notifyLabel.Text = "Score: " + score;
 				
 				AnimationPlayer player = GetNode<AnimationPlayer>("KaraokeCam/Control/NotifyText/AnimationPlayer");
 				player.Play("PopOut");
