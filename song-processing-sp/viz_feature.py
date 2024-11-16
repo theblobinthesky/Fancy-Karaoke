@@ -11,6 +11,7 @@ def load_features(file_path):
 
 def visualize_features(features, title=None, save_path=None):
     """Visualize the features as a heatmap."""
+    features = np.abs(features)
     plt.figure(figsize=(10, 4))
     plt.imshow(features.T, aspect='auto', origin='lower', interpolation='none', cmap='viridis')
     plt.xlabel('Frame')
@@ -34,7 +35,7 @@ def main(root):
     # Visualize features from the main audio file
     ft_file = Path(root) / "audio.ft"
     if ft_file.exists():
-        features = load_features(ft_file)
+        features = load_features(ft_file)[:400, :]
         save_path = output_dir / "audio.png"
         visualize_features(features, title="Audio Features", save_path=save_path)
     else:

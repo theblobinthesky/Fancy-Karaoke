@@ -10,7 +10,7 @@ import scipy
 from tqdm import tqdm
 from pathlib import Path
 
-NFFT = 512
+NFFT = 1024
 NMELS = 40
 NKEEPS = 12
 
@@ -20,25 +20,30 @@ def resample_and_downscale_using_mel_scale(pow_spectrum: np.ndarray, sr: int):
     return mel_spectrum
 
 def compute_mel_cepstrum(stft: np.ndarray, samplerate: int):
-    # pow_spectrum = np.abs(stft) / num_pos_freq
+    # pow_spectrum = np.abs(stft) / NFFT
     pow_spectrum = (np.abs(stft) ** 2) / NFFT
-    pow_spectrum[pow_spectrum == 0] = np.finfo(float).eps # Avoid log(0)==Nan.
-    # log_pow_spectrum = np.log(pow_spectrum)
-    mel_pow_spectrum = resample_and_downscale_using_mel_scale(pow_spectrum, samplerate)
-    dct = scipy.fftpack.dct(mel_pow_spectrum, type=2, norm="ortho")
+
+    mel_filter_banks = resample_and_downscale_using_mel_scale(pow_spectrum, samplerate)
+    mel_filter_banks = np.where(mel_filter_banks == 0, np.finfo(float).eps, mel_filter_banks)
+    mel_filter_banks = 20 * np.log10(mel_filter_banks) # Convert to decibel.
+
+    dct = scipy.fftpack.dct(mel_filter_banks, type=2, norm="ortho")
     mel_cepstrum = dct[1:(NKEEPS + 1)] # Only keep the first couple of coefficients, since fine details don't matter.
 
     return mel_cepstrum
 
 def compute_features(signal: np.ndarray, samplerate: int):
-    f, t, zxx = scipy.signal.stft(signal, nfft=NFFT, window="hann")
+    f, t, zxx = scipy.signal.stft(signal, nperseg=NFFT, nfft=NFFT, window="hann")
     features = np.zeros((zxx.shape[1], NKEEPS))
     for i in tqdm(range(zxx.shape[1])):
         feature = compute_mel_cepstrum(zxx[:, i], samplerate)
-
-        # Normalize feature.
-        eature = (feature - np.mean(feature)) / np.linalg.norm(feature)
         features[i] = feature
+
+    # features -= np.mean(features, axis=0, keepdims=True) # Mean normalization.
+    # features /= np.std(features, axis=0, keepdims=True) + 1e-8 # Stddev. normalization.
+
+    features -= np.mean(features, axis=1, keepdims=True) # Mean normalization.
+    features /= np.std(features, axis=1, keepdims=True) + 1e-8 # Stddev. normalization.
 
     return features
 

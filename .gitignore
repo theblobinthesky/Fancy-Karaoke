@@ -35,4 +35,4 @@ google-services.json
 # Virtual env.
 __pycache__
 venv
-# song-processing/song
+song-processing-sp/song

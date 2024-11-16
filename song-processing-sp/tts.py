@@ -23,7 +23,7 @@ def get_chapters(lines: list[str]):
             lastLines = chapters[-1]["lines"]
         else:
             temp = line
-            line = re.sub("\(.*\)", "", line)
+            line = re.sub(r"\(.*\)", "", line)
             line = line.replace("\"", "")
             line = line.replace("'", "")
             line = line.strip()
@@ -43,13 +43,13 @@ def get_chapters(lines: list[str]):
 
     return chapters, textToFile.items()
 
-def run_tts(root: str, downloads):
+def run_tts(root: str, lang: str, downloads):
     cache = {}
     wavs = []
 
     for (text, file) in downloads:
         print(f"TTS on '{text}'.")
-        tts = gTTS(text, lang='en-US', slow=True)
+        tts = gTTS(text, lang=lang)
         wav = f"{root}/{file}.wav"
         tts.save(wav)
         wavs.append(wav)
@@ -62,9 +62,18 @@ def join_tts(root: str, chapters):
             filename = line["filename"]
             wavs.append(f"{root}/{filename}.wav")
 
-        inputs = " ".join([f"-i {wav}" for wav in wavs])
-        cmd = f"ffmpeg -hide_banner -loglevel error {inputs} -filter_complex '[0:0][1:0][2:0][3:0]concat=n={len(wavs)}:v=0:a=1[out]' -map '[out]' {root}/tts-joins/{c}.wav"
+        # Write out the list of files that should be joined.
+        joinlist = "\n".join([f"file '{Path(wav).relative_to(root)}'" for wav in wavs])
+        join_path = f"{root}/joinlist.txt"
+        with open(join_path, "w") as file:
+            file.write(joinlist)
+
+        # Join them.
+        cmd = f"ffmpeg -hide_banner -loglevel error -f concat -i {root}/joinlist.txt -c copy {root}/tts-joins/{c}.wav"
         subprocess.call(cmd, shell=True)
+
+        # Delete the list.
+        Path(join_path).unlink(missing_ok=True)
 
 def main(root: str):
     shutil.rmtree(f"{root}/tts", ignore_errors=True)
@@ -79,7 +88,11 @@ def main(root: str):
     with open(f"{root}/tts.json", "w") as file:
         json.dump(chapters, file, indent=2)
 
-    run_tts(root, downloads)
+    lang = input("Language (default: en-US): ")
+    lang = lang if lang != "" else "en-US"
+    print(f"Language: {lang}")
+    run_tts(root, lang, downloads)
+
     join_tts(root, chapters)
 
 if __name__ == "__main__":
