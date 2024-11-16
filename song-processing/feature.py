@@ -1,6 +1,7 @@
 # See https://medium.com/@derutycsl/intuitive-understanding-of-mfccs-836d36a1f779
 # See https://en.wikipedia.org/wiki/Mel_scale
 # See https://en.wikipedia.org/wiki/Mel-frequency_cepstrum
+# See https://haythamfayek.com/2016/04/21/speech-processing-for-machine-learning.html
 
 import soundfile as sf
 import numpy as np
@@ -9,37 +10,35 @@ import scipy
 from tqdm import tqdm
 from pathlib import Path
 
-NFFT = 1024
-NMELS = 16
+NFFT = 512
+NMELS = 40
+NKEEPS = 12
 
 def resample_and_downscale_using_mel_scale(pow_spectrum: np.ndarray, sr: int):
     mel_filter = librosa.filters.mel(sr=sr, n_fft=NFFT, n_mels=NMELS)
     mel_spectrum = np.dot(mel_filter, pow_spectrum)
-
-    # if np.isnan(mel_spectrum).any():
-    #    print(f"nans: {np.isinf(pow_spectrum).any()}")
-
     return mel_spectrum
 
 def compute_mel_cepstrum(stft: np.ndarray, samplerate: int):
-    # Include the 0-frequency (constant offset), don't have the negative frequencies since
-    # for the fft of real signals the negative frequencies are redundant. 
-    num_pos_freq = stft.shape[0] // 2 + 1 
-
-    pow_spectrum = np.abs(stft) / num_pos_freq
-    log_pow_spectrum = np.log(pow_spectrum)
-    mel_log_pow_spectrum = resample_and_downscale_using_mel_scale(log_pow_spectrum, samplerate)
-    mel_cepstrum = scipy.fftpack.dct(mel_log_pow_spectrum)
+    # pow_spectrum = np.abs(stft) / num_pos_freq
+    pow_spectrum = (np.abs(stft) ** 2) / NFFT
+    pow_spectrum[pow_spectrum == 0] = np.finfo(float).eps # Avoid log(0)==Nan.
+    # log_pow_spectrum = np.log(pow_spectrum)
+    mel_pow_spectrum = resample_and_downscale_using_mel_scale(pow_spectrum, samplerate)
+    dct = scipy.fftpack.dct(mel_pow_spectrum, type=2, norm="ortho")
+    mel_cepstrum = dct[1:(NKEEPS + 1)] # Only keep the first couple of coefficients, since fine details don't matter.
 
     return mel_cepstrum
 
 def compute_features(signal: np.ndarray, samplerate: int):
     f, t, zxx = scipy.signal.stft(signal, nfft=NFFT, window="hann")
-    features = np.zeros((zxx.shape[1], NMELS))
+    features = np.zeros((zxx.shape[1], NKEEPS))
     for i in tqdm(range(zxx.shape[1])):
-        features[i] = compute_mel_cepstrum(zxx[:, i], samplerate)
+        feature = compute_mel_cepstrum(zxx[:, i], samplerate)
 
-    features[np.isnan(features)] = 0.0
+        # Normalize feature.
+        eature = (feature - np.mean(feature)) / np.linalg.norm(feature)
+        features[i] = feature
 
     return features
 
@@ -54,16 +53,12 @@ def load_features(file: str):
 def load_and_save_features(file: str):
     features = load_features(file)
 
-    path = str(Path(file).parent.joinpath(Path(file).stem))
-    ft_path = f"{path}.ft"
+    ft_path = Path(file).with_suffix(".ft")
     with open(ft_path, "wb") as file:
         np.save(file, features)
 
 def main(root: str):
     audio_wav = f"{root}/audio.wav"
-    tts_wav = f"{root}/tts.wav"
-    # tts_wavs = [str(path) for path in Path(f"{root}/tts").glob("*.wav")]
-
     load_and_save_features(audio_wav)
 
     for tts_join in Path(f"{root}/tts-joins").glob("*.wav"):
