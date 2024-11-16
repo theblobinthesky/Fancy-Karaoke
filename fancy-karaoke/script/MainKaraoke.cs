@@ -37,6 +37,31 @@ public partial class MainKaraoke : Node2D
 		_timeDelay = AudioServer.GetTimeToNextMix() + AudioServer.GetOutputLatency();
 	}
 	
+	public void setup_player(string player) {
+		Label playerLabel = GetNode<Label>("KaraokeCam/Control/Player");
+		playerLabel.Text = "Player: " + player;
+		LabelSettings settings = GD.Load<LabelSettings>("res://fonts/score_font.tres");
+		
+		Color color = Globals.Instance.TeamColors[Globals.Instance.PlayerTeams[player]];
+		
+		playerLabel.LabelSettings = new LabelSettings();
+		playerLabel.LabelSettings.FontSize = settings.FontSize;
+		playerLabel.LabelSettings.FontColor = color;
+		playerLabel.LabelSettings.OutlineSize = settings.OutlineSize;
+		playerLabel.LabelSettings.OutlineColor = color.Inverted();
+		
+		
+		StyleBoxFlat style = new StyleBoxFlat();
+		style.BgColor = color;
+		style.BorderColor = color;
+		style.BorderWidthLeft = 20;
+		style.BorderWidthTop = 20;
+		style.BorderWidthRight = 20;
+		style.BorderWidthBottom = 20;
+		
+		playerLabel.AddThemeStyleboxOverride("normal", style);
+	}
+	
 	public void setup_notify_label() {
 		Label notify = GetNode<Label>("KaraokeCam/Control/NotifyText");
 		LabelSettings settings = GD.Load<LabelSettings>("res://fonts/notify_font.tres");
