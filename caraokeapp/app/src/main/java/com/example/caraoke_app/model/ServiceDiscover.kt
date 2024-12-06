@@ -102,7 +102,7 @@ fun createServiceDiscover(name: String, consumer: Consumer<InetAddress>) {
     }
 }
 
-fun connectToServer(addr: InetAddress) {
+fun connectToServer(addr: InetAddress, audio: Audio) {
     val service = Executors.newFixedThreadPool(1)
     service.execute {
         val socket = Socket()
@@ -123,13 +123,7 @@ fun connectToServer(addr: InetAddress) {
 
             println(msgStatus)
             if (msgStatus == "ACCEPTED") {
-                for (i in 0..5) {
-                    val bytesData = ByteArray(1024)
-                    Random.nextBytes(bytesData)
-                    socket.getOutputStream().write(bytesData)
-                    socket.getOutputStream().flush()
-                }
-                socket.close()
+                audio.record(socket)
             } else {
                 socket.close()
             }

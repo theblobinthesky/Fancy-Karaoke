@@ -24,6 +24,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
+import com.example.caraoke_app.model.Audio
 import com.example.caraoke_app.model.connectToServer
 import com.example.caraoke_app.model.createServiceDiscover
 import com.example.caraoke_app.ui.theme.CaraokeAppTheme
@@ -35,6 +36,8 @@ data class Server(val address: InetAddress)
 class MainActivity : ComponentActivity() {
     private var _servers = mutableStateListOf<Server>()
     val servers: List<Server> get() = _servers
+
+    val audio: Audio = Audio()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -108,7 +111,9 @@ class MainActivity : ComponentActivity() {
                                 if (hasAudioPermission) {
                                     connectedServer = server
                                     isTransmitting = false
-                                    connectToServer(server.address)
+                                    audio.initAudio()
+                                    audio.setOnCancel({ -> isTransmitting = false; connectedServer = null })
+                                    connectToServer(server.address, audio)
                                 } else {
                                     coroutineScope.launch {
                                         snackbarHostState.showSnackbar("Audio permission not granted.")
@@ -144,6 +149,7 @@ class MainActivity : ComponentActivity() {
                                 // TODO: Stop.
                                 isTransmitting = false
                                 connectedServer = null
+                                audio.stopRecord()
                             })
                     }
                 }
