@@ -24,6 +24,7 @@ public partial class MainKaraoke : Node2D
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
 	{
+		GetViewport().TransparentBg = true;
 		noteHits.Add((Double.MaxValue, "Miss", new Color(1, 0, 0, 1), 0.0d));
 		noteHits.Add((45.0d, "Ok", new Color(1, 1, 1, 1), 0.75d));
 		noteHits.Add((30.0d, "Gut", new Color(0, 0, 1, 1), 1.0d));

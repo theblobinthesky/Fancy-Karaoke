@@ -47,6 +47,11 @@ func _ready() -> void:
 		var player = (get_node("MusicPlayer") as AudioStreamPlayer);
 		player.stream = load("res://music/" + songName + ".mp3");
 		player.play()
+		
+		var video = (get_node("VideoStreamPlayer") as VideoStreamPlayer)
+		video.stream = load("res://videos/" + songName + ".ogv")
+		video.volume_db = -10
+		video.play()
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.

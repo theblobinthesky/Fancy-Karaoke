@@ -111,6 +111,14 @@ libraries = {
 "": SubResource("AnimationLibrary_o1thg")
 }
 
+[node name="ColorRect" type="ColorRect" parent="KaraokeCam/Control"]
+layout_mode = 0
+offset_left = 60.0
+offset_top = 840.0
+offset_right = 1860.0
+offset_bottom = 920.0
+color = Color(0.252028, 0.252028, 0.252028, 0.784314)
+
 [node name="LyricsContainer" type="HBoxContainer" parent="KaraokeCam/Control"]
 layout_mode = 2
 offset_left = 60.0

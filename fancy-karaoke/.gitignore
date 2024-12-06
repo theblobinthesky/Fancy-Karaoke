@@ -9,3 +9,9 @@
 *.ogv.import
 *.png
 *.png.import
+
+# exclude logo
+!Fancy-Karaoke_Logo.png
+!Fancy-Karaoke_Logo.png.import
+!Fancy-Karaoke_Icon.png
+!Fancy-Karaoke_Icon.png.import

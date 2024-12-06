@@ -50,6 +50,9 @@ public partial class StartScreen : Control
 	
 	public void StartGame() {
 		Globals.Instance.PlayerCount = playerList.Count;
+		foreach (string player in playerList) {
+			Globals.Instance.PlayerTeams.Add(player, "Default");
+		}
 		GetTree().ChangeSceneToPacked(karaoke);
 	}
 	

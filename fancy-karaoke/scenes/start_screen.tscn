@@ -1,6 +1,18 @@
-[gd_scene load_steps=2 format=3 uid="uid://bm4dmjbcmedcy"]
+[gd_scene load_steps=5 format=3 uid="uid://bm4dmjbcmedcy"]
 
 [ext_resource type="Script" path="res://script/StartScreen.cs" id="1_embp5"]
+[ext_resource type="Texture2D" uid="uid://soh43u5nk3ou" path="res://Fancy-Karaoke_Logo.png" id="2_ehxdm"]
+
+[sub_resource type="Gradient" id="Gradient_t3rcq"]
+offsets = PackedFloat32Array(0.324675, 1)
+colors = PackedColorArray(0.407843, 0.12549, 0.270588, 1, 0.180392, 0.164706, 0.313726, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_snthl"]
+gradient = SubResource("Gradient_t3rcq")
+width = 1920
+height = 1080
+fill = 2
+fill_to = Vector2(0.706422, 0.945974)
 
 [node name="Control" type="Control"]
 layout_mode = 3
@@ -40,6 +52,7 @@ custom_minimum_size = Vector2(0, 50)
 layout_mode = 2
 
 [node name="HBoxContainer" type="HBoxContainer" parent="GlobalLayout"]
+z_index = 2
 layout_mode = 2
 theme_override_constants/separation = 100
 alignment = 1
@@ -56,3 +69,18 @@ language = "de_DE"
 layout_mode = 2
 theme_override_font_sizes/font_size = 92
 text = "Teams wählen"
+
+[node name="TextureRect" type="TextureRect" parent="."]
+z_index = -1
+layout_mode = 0
+offset_left = 448.0
+offset_top = 28.0
+offset_right = 1472.0
+offset_bottom = 1052.0
+mouse_filter = 2
+texture = ExtResource("2_ehxdm")
+
+[node name="ColorRect" type="Sprite2D" parent="."]
+z_index = -2
+position = Vector2(960, 540)
+texture = SubResource("GradientTexture2D_snthl")
